@@ -1,69 +1,89 @@
 # Calendar-Agent
-
 Application featuring a real-time AI voice assistant powered by an AI Agent with integrated **Google Calendar** capabilities.
 
-## 🚀 Features
+## 🚀 Key Features
 
-* **Voice-to-Voice AI:** Low-latency interaction using OpenAI's WebRTC implementation.
-* **Calendar Integration:** View and schedule events directly through the AI.
-* **Full-Stack:** Next.js App Router for a seamless frontend and backend experience.
+* **Low-Latency Voice Interaction:** Utilizes WebRTC for high-performance, bidirectional speech-to-speech communication.
+* **Autonomous Tool Use:** The agent identifies scheduling intents and autonomously calls Google Calendar functions to create events.
+* **Natural Language Understanding:** Handles complex scheduling requests, including date/time extraction and event titling.
+* **Production Ready:** Fully responsive Next.js frontend with a secure backend architecture.
+
+## 🔗 Project Links
+
+* **Live Application:** [https://calendar-agent-jade.vercel.app/](https://calendar-agent-jade.vercel.app/)
 
 ---
 
-## 🛠️ Local Setup
+## 🛠️ Technology Stack
 
-### 1. Prerequisites
+* **Core Engine:** OpenAI Realtime API (`gpt-4o-realtime`)
+* **Frontend:** React.js / Next.js (App Router)
+* **Communication:** WebRTC (Real-time audio streaming)
+* **Backend:** Next.js API Routes (Node.js)
+* **Integrations:** Google Calendar API (Service Account authentication)
 
-* [Node.js](https://nodejs.org/) (v21 or higher)
-* An [OpenAI API Key](https://platform.openai.com/)
-* A [Google Cloud Project](https://console.cloud.google.com/) with Calendar API enabled
+---
 
-### 2. Environment Variables
+## ⚙️ Google Cloud Setup (Prerequisites)
+
+To enable the agent to interact with Google Calendar:
+
+1. **Create Project:** Go to the [Google Cloud Console](https://console.cloud.google.com/) and create a new project.
+2. **Enable API:** Search for and enable the **Google Calendar API**.
+3. **Service Account:**
+* Navigate to **APIs & Services > Credentials**.
+* Create a **Service Account** and copy its unique email address.
+* Go to the **Keys** tab, click **Add Key > Create New Key (JSON)**. Save this file for your `.env` variables.
+
+
+4. **Calendar Sharing:**
+* Open your Google Calendar settings.
+* Under **"Share with specific people"**, add the **Service Account Email**.
+* Grant permissions to **"Make changes to events"**.
+
+
+
+---
+
+## 💻 Local Installation
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/niranjan-404/calendar-agent.git
+cd calendar-agent
+
+```
+
+### 2. Configure Environment Variables
 
 Create a `.env.local` file in the root directory:
 
 ```env
-# OpenAI
+# OpenAI Configuration
 OPENAI_API_KEY=your_openai_key
 
-# Google Service Account
+# Google Service Account (from your JSON key)
 GOOGLE_PROJECT_ID=your-project-id
 GOOGLE_CLIENT_EMAIL=your-service-account@your-project.iam.gserviceaccount.com
 GOOGLE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nYourKeyContents\n-----END PRIVATE KEY-----\n"
-GOOGLE_CLIENT_ID=
-GOOGLE_AUTH_URI=
-GOOGLE_TOKEN_URI=
-GOOGLE_AUTH_PROVIDER_X509_CERT_URL=
-GOOGLE_CLIENT_X509_CERT_URL=
-GOOGLE_UNIVERSE_DOMAIN=
 
-# primary email
-CALENDAR_ID=primary email
+# Target Calendar ID
+CALENDAR_ID=your-primary-email@gmail.com
 
 ```
 
-### 3. Google Calendar Authorization
-
-1. Go to the **Google Cloud Console** > **IAM & Admin** > **Service Accounts**.
-2. Create a key for your service account in **JSON** format.
-3. Open your Google Calendar settings.
-4. Under **"Share with specific people"**, add the Service Account Email and grant it **"Make changes to events"** permissions.
-
----
-
-## 🏃 Running Locally
+### 3. Run Development Server
 
 ```bash
-# Install dependencies
 npm install
-
-# Run the development server
 npm run dev
 
 ```
 
-Open [http://localhost:3000](https://www.google.com/search?q=http://localhost:3000) to view the app.
+Navigate to `http://localhost:3000` to start interacting with the agent.
 
+---
 
 ## 🏗️ Project Structure
 
@@ -83,4 +103,3 @@ Open [http://localhost:3000](https://www.google.com/search?q=http://localhost:30
 ├── jsconfig.json           
 └── package.json             # Absolute imports configuration
 ```
-
