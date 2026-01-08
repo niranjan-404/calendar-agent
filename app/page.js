@@ -12,6 +12,8 @@ export default function VoiceCalendarAgent() {
   const [error, setError] = useState(null);
 
   const sessionRef = useRef(null);
+  const clientSecretRef = useRef(null);
+  const connectingRef = useRef(false);
   const audioContextRef = useRef(null);
   const analyserRef = useRef(null);
   const animationFrameRef = useRef(null);
@@ -25,6 +27,14 @@ export default function VoiceCalendarAgent() {
   // Monitor microphone input level
   const monitorMicrophoneLevel = async () => {
     try {
+      // Feature-detect getUserMedia to avoid TypeError when it's unavailable
+      if (typeof navigator === 'undefined' || !navigator.mediaDevices || typeof navigator.mediaDevices.getUserMedia !== 'function') {
+        console.warn('getUserMedia not available on navigator.mediaDevices:', navigator?.mediaDevices);
+        setError('Microphone not available. Your browser does not support microphone access or it is blocked. Ensure you are using HTTPS or localhost and grant microphone permission.');
+        return;
+      }
+
+      if (audioContextRef.current) return; // Already monitoring
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const audioContext = new (window.AudioContext || window.webkitAudioContext)();
       const analyser = audioContext.createAnalyser();
@@ -39,12 +49,16 @@ export default function VoiceCalendarAgent() {
       const dataArray = new Uint8Array(analyser.frequencyBinCount);
 
       const checkLevel = () => {
-        if (!isConnected) return;
-
         analyser.getByteFrequencyData(dataArray);
         const average = dataArray.reduce((a, b) => a + b) / dataArray.length;
 
-        setIsMicActive(average > 10); // Threshold for mic activity
+        const active = average > 10; // Threshold for mic activity
+        setIsMicActive(active);
+
+        // If user is speaking and we haven't connected yet, initiate connection
+        if (active && !isConnected && !connectingRef.current && sessionRef.current && clientSecretRef.current) {
+          connectSession();
+        }
 
         animationFrameRef.current = requestAnimationFrame(checkLevel);
       };
@@ -52,18 +66,60 @@ export default function VoiceCalendarAgent() {
       checkLevel();
     } catch (err) {
       console.error('Microphone access error:', err);
-      setError('Could not access microphone. Please grant permission.');
+      // Provide clearer messages based on error type
+      if (err?.name === 'NotAllowedError' || err?.name === 'SecurityError') {
+        setError('Microphone permission denied. Please allow microphone access in your browser settings.');
+      } else if (err?.name === 'NotFoundError') {
+        setError('No microphone found. Please connect a microphone and try again.');
+      } else {
+        setError('Could not access microphone. Please grant permission.');
+      }
     }
-  };
+  }; 
   // Cleanup microphone monitoring
   const stopMicrophoneMonitoring = () => {
     if (animationFrameRef.current) {
       cancelAnimationFrame(animationFrameRef.current);
+      animationFrameRef.current = null;
     }
     if (audioContextRef.current) {
       audioContextRef.current.close();
+      audioContextRef.current = null;
     }
+    analyserRef.current = null;
   };
+
+  // Connect the Realtime session when the user starts speaking
+  const connectSession = async () => {
+    if (!sessionRef.current) return;
+    if (isConnected || connectingRef.current) return;
+    try {
+      connectingRef.current = true;
+      setStatus('Connecting to Realtime API...');
+      console.log('Connecting with ephemeral token:', clientSecretRef.current?.substring(0, 10) + '...');
+      await sessionRef.current.connect({ apiKey: clientSecretRef.current });
+      console.log('✅ session.connect() promise resolved; waiting for session to emit "connected" event...');
+      await new Promise((resolve, reject) => {
+        const timeout = setTimeout(() => {
+          sessionRef.current.off('connected', onConnected);
+          sessionRef.current.off('error', onError);
+          reject(new Error('Timeout waiting for session.connected event'));
+        }, 15000);
+        const onConnected = () => { clearTimeout(timeout); sessionRef.current.off('error', onError); resolve(); };
+        const onError = (err) => { clearTimeout(timeout); sessionRef.current.off('connected', onConnected); reject(err); };
+        sessionRef.current.on('connected', onConnected);
+        sessionRef.current.on('error', onError);
+      });
+      console.log('✅ Session "connected" event received. Session is fully ready');
+    } catch (err) {
+      console.error('Failed to connect session:', err);
+      setError(err.message || String(err));
+      addMessage('system', `❌ Error: ${err.message || String(err)}`);
+      stopMicrophoneMonitoring();
+    } finally {
+      connectingRef.current = false;
+    }
+  }; 
   useEffect(() => {
     return () => {
       stopMicrophoneMonitoring();
@@ -309,9 +365,12 @@ export default function VoiceCalendarAgent() {
         ]
       });
       // Create the session with the agent
-      const session = new RealtimeSession(agent);
+      const session = new RealtimeSession(agent, {model: 'gpt-realtime'});
       sessionRef.current = session;
+      clientSecretRef.current = client_secret;
       // Set up comprehensive event listeners
+      // Connection will be initiated when the user starts speaking.
+      
       session.on('connected', () => {
         console.log('✅ Session connected event fired');
         setIsConnected(true);
@@ -383,11 +442,11 @@ export default function VoiceCalendarAgent() {
         console.log('🔊 Audio response done');
         setStatus('🎤 Microphone Active - Listening...');
       });
-      setStatus('Connecting to Realtime API...');
-      console.log('Connecting with ephemeral token:', client_secret?.substring(0, 10) + '...');
-      // Connect to the session with the ephemeral key
-      await session.connect({ apiKey: client_secret });
-      console.log('✅ session.connect() promise resolved');
+      // Connection will be established when the user starts speaking
+      setStatus('🎤 Press and speak to connect...');
+      setIsRecording(true);
+      // Start monitoring microphone for speech to trigger the connection
+      monitorMicrophoneLevel();
 
       // Debug: log session object to see available methods
       console.log('📋 Session object:', session);
@@ -553,6 +612,10 @@ export default function VoiceCalendarAgent() {
       }
       sessionRef.current = null;
     }
+    // Clear any stored secret / connecting flag
+    if (clientSecretRef) clientSecretRef.current = null;
+    if (connectingRef) connectingRef.current = false;
+
     setIsConnected(false);
     setIsRecording(false);
     setIsMicActive(false);
