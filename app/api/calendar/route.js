@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
-import { CalendarService } from '@/lib/calendar';
+import { calendarService } from '../../../lib/calendar';
 
-const calendar = new CalendarService();
+const calendar = calendarService;
 
 export async function POST(request) {
   try {
