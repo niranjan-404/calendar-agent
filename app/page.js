@@ -103,7 +103,6 @@ export default function VoiceCalendarAgent() {
         const timeout = setTimeout(() => {
           sessionRef.current.off('connected', onConnected);
           sessionRef.current.off('error', onError);
-          reject(new Error('Timeout waiting for session.connected event'));
         }, 15000);
         const onConnected = () => { clearTimeout(timeout); sessionRef.current.off('error', onError); resolve(); };
         const onError = (err) => { clearTimeout(timeout); sessionRef.current.off('connected', onConnected); reject(err); };
@@ -202,7 +201,7 @@ export default function VoiceCalendarAgent() {
     }),
     execute: async (args) => {
       console.log('Tool execute: create_calendar_event', args);
-      addMessage('system', `⚙️ Calling: create_calendar_event...`);
+      addMessage('system', `⚙️ Creating an event: ${args.summary}...`);
 
       try {
         const response = await fetch('/api/calendar', {
@@ -231,7 +230,7 @@ export default function VoiceCalendarAgent() {
     }),
     execute: async (args) => {
       console.log('Tool execute: list_calendar_events', args);
-      addMessage('system', `⚙️ Calling: list_calendar_events...`);
+      addMessage('system', `⚙️ Loading upcoming events...`);
 
       try {
         const response = await fetch('/api/calendar', {
@@ -265,7 +264,7 @@ export default function VoiceCalendarAgent() {
     }),
     execute: async (args) => {
       console.log('Tool execute: delete_calendar_event', args);
-      addMessage('system', `⚙️ Calling: delete_calendar_event...`);
+      addMessage('system', `⚙️ Deleting event: ${args.eventId}...`);
 
       try {
         const response = await fetch('/api/calendar', {
@@ -295,7 +294,7 @@ export default function VoiceCalendarAgent() {
     }),
     execute: async (args) => {
       console.log('Tool execute: find_calendar_event', args);
-      addMessage('system', `⚙️ Calling: find_calendar_event...`);
+      addMessage('system', `⚙️ Finding event: ${args?.summary} on ${args?.date}...`);
 
       try {
         const response = await fetch('/api/calendar', {
@@ -543,7 +542,6 @@ export default function VoiceCalendarAgent() {
         console.log('🔧 agent_tool_start:', args);
         const toolName = args[2]?.name || 'tool';
         setStatus(`⚙️ Executing: ${toolName}...`);
-        addMessage('system', `⚙️ Calling: ${toolName}...`);
       });
       session.on('agent_tool_end', (...args) => {
         console.log('🔧 agent_tool_end:', args);
