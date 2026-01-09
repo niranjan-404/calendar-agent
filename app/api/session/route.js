@@ -10,10 +10,6 @@ export async function POST(request) {
         { status: 500 }
       );
     }
-
-    // CRITICAL FIX #1: Use the correct endpoint for ephemeral tokens
-    // Changed from: /v1/realtime/sessions
-    // Changed to: /v1/realtime/client_secrets
     const response = await fetch('https://api.openai.com/v1/realtime/client_secrets', {
       method: 'POST',
       headers: {
@@ -72,7 +68,6 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Invalid response from OpenAI' }, { status: 500 });
     }
 
-    // CRITICAL FIX #2: The response structure has changed
     // The API returns { value: "ek_...", expires_at: ..., session: {...} }
     // NOT { client_secret: { value: "ek_..." } }
     if (!data?.value) {
