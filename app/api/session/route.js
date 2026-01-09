@@ -24,8 +24,8 @@ export async function POST(request) {
         },
         // Session configuration
         session: {
-          type: 'realtime',  // Required: specify session type
-          model: 'gpt-realtime',  // Use 'gpt-realtime' not the preview model
+          type: 'realtime',
+          model: 'gpt-realtime',  
           instructions: 'You are a friendly calendar assistant.',
           // Optional: Configure audio settings
           audio: {
@@ -77,7 +77,7 @@ export async function POST(request) {
 
     // Return the ephemeral key directly from the 'value' field
     return NextResponse.json({
-      client_secret: data.value,  // This will be "ek_..."
+      client_secret: data.value,  
       expires_at: data.expires_at,
       session: data.session
     });
