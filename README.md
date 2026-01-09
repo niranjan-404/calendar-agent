@@ -11,7 +11,7 @@ Application featuring a real-time AI voice assistant powered by an AI Agent with
 ## 🔗 Project Links
 
 * **Live Application:** [https://calendar-agent-jade.vercel.app/](https://calendar-agent-jade.vercel.app/)
-
+*  **Demo:** [Calendar agent in action](https://drive.google.com/file/d/1G98Nvre_u48wPwZ5b1jlTjyEhpXZSUVM/view?usp=sharing)
 ---
 
 ## 🛠️ Technology Stack
