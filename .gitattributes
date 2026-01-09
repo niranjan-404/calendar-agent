@@ -2,8 +2,4 @@
 * text=auto
 *.js text eol=lf
 *.css text eol=lf
-*.md  text eol=lf
 *.md text eol=lf
-'@
-git add .gitattributes
-git commit -m "Add .gitattributes to normalize line endings"
