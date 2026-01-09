@@ -17,7 +17,7 @@ export async function POST(request) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        // Optional: Configure token expiration (default is 10 minutes)
+        // Configure token expiration (default is 10 minutes)
         expires_after: {
           anchor: 'created_at',
           seconds: 600  // 10 minutes
@@ -27,7 +27,7 @@ export async function POST(request) {
           type: 'realtime',
           model: 'gpt-realtime',  
           instructions: 'You are a friendly calendar assistant.',
-          // Optional: Configure audio settings
+          // Configure audio settings
           audio: {
             input: {
               format: {
