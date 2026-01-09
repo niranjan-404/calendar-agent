@@ -16,7 +16,7 @@ Application featuring a real-time AI voice assistant powered by an AI Agent with
 
 ## 🛠️ Technology Stack
 
-* **Core Engine:** OpenAI Realtime API (`gpt-4o-realtime`)
+* **Core Engine:** OpenAI Realtime API (`gpt-realtime`)
 * **Frontend:** React.js / Next.js (App Router)
 * **Communication:** WebRTC (Real-time audio streaming)
 * **Backend:** Next.js API Routes (Node.js)

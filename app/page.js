@@ -130,7 +130,7 @@ export default function VoiceCalendarAgent() {
     };
   }, []);
 
-  // Development-only test: create a sample event when the component mounts
+  // Development-only test:
   // useEffect(() => {
   //   if (process.env.NODE_ENV !== 'development') return;
   //   let cancelled = false;
@@ -194,7 +194,6 @@ export default function VoiceCalendarAgent() {
     description: 'Create a new event in the user\'s Google Calendar',
     parameters: z.object({
       summary: z.string().describe('The title/name of the event'),
-      attendees: z.array(z.string()).optional().describe('List of attendee email addresses'),
       startTime: z.string().describe('Start time in ISO 8601 format (YYYY-MM-DDTHH:MM:SS)'),
       endTime: z.string().describe('End time in ISO 8601 format (YYYY-MM-DDTHH:MM:SS)'),
       timezone: z.string().default('Asia/Kolkata').describe('Timezone (default: Asia/Kolkata)')

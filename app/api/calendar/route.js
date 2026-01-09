@@ -17,7 +17,6 @@ export async function POST(request) {
           params.summary,
           params.startTime,
           params.endTime,
-          params.attendees,
           params.timezone
         );
         break;
