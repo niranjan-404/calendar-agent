@@ -628,13 +628,12 @@ export default function VoiceCalendarAgent() {
           <h1 className="text-4xl font-bold text-gray-800 mb-2">
             🎙️ Voice Calendar Assistant
           </h1>
-          <p className="text-gray-600">Powered by OpenAI Agents SDK (WebRTC)</p>
           <div className="flex justify-center gap-4 mt-4 text-sm text-gray-500">
             <span className="flex items-center gap-1">
               🔒 Secure WebRTC
             </span>
             <span className="flex items-center gap-1">
-              🤖 SDK Powered
+              🤖 AI Powered
             </span>
             <span className="flex items-center gap-1">
               📅 Real-time Sync
